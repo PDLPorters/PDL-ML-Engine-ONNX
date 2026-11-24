@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 use PDL::Core::Dev;
 
 my $ort_inc;
-for my $dir ('/usr/include/onnxruntime', '/usr/include', '/usr/local/include/onnxruntime') {
+for my $dir ('/usr/include/onnxruntime', '/usr/include', '/usr/local/include/onnxruntime', '/opt/homebrew/include/onnxruntime', '/opt/homebrew/include') {
     if (-f "$dir/onnxruntime_c_api.h") {
         $ort_inc = $dir;
         last;
@@ -15,6 +15,7 @@ for my $dir ('/usr/include/onnxruntime', '/usr/include', '/usr/local/include/onn
 if (!$ort_inc) {
     die "libonnxruntime-dev (onnxruntime_c_api.h) is required to build PDL::ML::Engine::ONNX.\n";
 }
+my $lib_flag = $ort_inc =~ m{^/opt/homebrew} ? '-L/opt/homebrew/lib ' : '';
 
 my $pdl_inc = PDL::Core::Dev::PDL_INCLUDE();
 
@@ -37,7 +38,7 @@ WriteMakefile(
     },
     INC     => '-I. ' . $pdl_inc . ' -I' . $ort_inc,
     XSMULTI => 1,
-    LIBS    => ['-lonnxruntime'],
+    LIBS    => [ $lib_flag . '-lonnxruntime' ],
     clean   => { FILES => 'PDL-ML-Engine-ONNX-* *.o ONNX.bs ONNX.c' },
     META_MERGE => {
         'meta-spec' => { version => 2 },
