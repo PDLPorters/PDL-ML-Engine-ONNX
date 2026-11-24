@@ -4,8 +4,14 @@ use warnings;
 use ExtUtils::MakeMaker;
 use PDL::Core::Dev;
 
+my $brew_prefix = '';
+if ($^O eq 'darwin') {
+    chomp($brew_prefix = `brew --prefix 2>/dev/null` || '');
+}
+my @inc_dirs = ('/usr/include/onnxruntime', '/usr/include', '/usr/local/include/onnxruntime');
+push @inc_dirs, "$brew_prefix/include/onnxruntime", "$brew_prefix/include" if $brew_prefix;
 my $ort_inc;
-for my $dir ('/usr/include/onnxruntime', '/usr/include', '/usr/local/include/onnxruntime', '/opt/homebrew/include/onnxruntime', '/opt/homebrew/include') {
+for my $dir (@inc_dirs) {
     if (-f "$dir/onnxruntime_c_api.h") {
         $ort_inc = $dir;
         last;
@@ -15,7 +21,7 @@ for my $dir ('/usr/include/onnxruntime', '/usr/include', '/usr/local/include/onn
 if (!$ort_inc) {
     die "libonnxruntime-dev (onnxruntime_c_api.h) is required to build PDL::ML::Engine::ONNX.\n";
 }
-my $lib_flag = $ort_inc =~ m{^/opt/homebrew} ? '-L/opt/homebrew/lib ' : '';
+my $lib_flag = ($brew_prefix && $ort_inc =~ m{^\$brew_prefix}) ? "-L$brew_prefix/lib " : '';
 
 my $pdl_inc = PDL::Core::Dev::PDL_INCLUDE();
 
