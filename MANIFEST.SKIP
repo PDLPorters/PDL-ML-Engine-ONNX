@@ -7,3 +7,14 @@
 ^ONNX\.bs$
 \.o$
 ^PDL-ML-Engine-ONNX-
+^\.git/
+^\.github/
+^\.gitignore$
+^dot-git/
+^_alien/
+\.bs$
+\.xsc$
+^lib/.*\.c$
+\.tar\.gz$
+~$
+\.bak$

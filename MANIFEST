@@ -1,8 +1,10 @@
 Changes
-lib/PDL/ML/Engine/ONNX.pm
-Makefile.PL
+LICENSE
 MANIFEST
 MANIFEST.SKIP
-lib/PDL/ML/Engine/ONNX.xs
+Makefile.PL
 README.md
+examples/quickstart.pl
+lib/PDL/ML/Engine/ONNX.pm
+lib/PDL/ML/Engine/ONNX.xs
 t/00-load.t

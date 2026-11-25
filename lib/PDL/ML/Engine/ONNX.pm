@@ -87,6 +87,49 @@ Load an C<.onnx> model file into a C<PDL::ML::Engine::ONNX::Session>.
 
     $sess = load_session($path);
 
+=head1 TUTORIAL
+
+This tutorial adapts the ONNX Runtime C API quickstart to idiomatic Perl and
+L<PDL>: querying the runtime environment, checking available execution
+providers, and loading an C<.onnx> model session to inspect its input and
+output tensor names.
+
+=head2 1. Inspect the ONNX Runtime Environment
+
+    use strict;
+    use warnings;
+    use PDL::ML::Engine::ONNX qw(onnx_version available_providers load_session);
+
+    print 'ONNX Runtime version: ', onnx_version(), "\n";
+
+    my @providers = available_providers();
+    print 'Available providers:  ', join(', ', @providers), "\n";
+
+    if (grep { $_ eq 'CUDAExecutionProvider' } @providers) {
+        print 'CUDA acceleration is available', "\n";
+    }
+
+=head2 2. Load a Model Session and Inspect Graph Signatures
+
+Use C<load_session> to open any exported C<.onnx> model (from PyTorch,
+TensorFlow, scikit-learn, or XGBoost) and query its input and output tensor
+names:
+
+    my $model_path = 'model.onnx';
+    my $sess       = load_session($model_path);
+
+    my @inputs  = $sess->input_names();
+    my @outputs = $sess->output_names();
+
+    print 'Inputs:  ', join(', ', @inputs), "\n";
+    print 'Outputs: ', join(', ', @outputs), "\n";
+
+The underlying C<OrtSession> handle is released automatically when C<$sess>
+goes out of scope.
+
+See F<examples/quickstart.pl> in the distribution for a complete runnable
+script.
+
 =head1 TYPES
 
 Supports standard real numeric PDL types (C<byte>, C<short>, C<long>, C<longlong>, C<float>, C<double> as supported by the underlying library). Complex types (C<cfloat>, C<cdouble>) are not supported by this backend.
@@ -99,8 +142,11 @@ L<PDL>, L<PDL::Torch>, L<PDL::XGBoost>, L<PDL::FAISS>, L<PDL::GGML>
 
 C.J. Collier <cjac@google.com>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-Licensed under the Apache License, Version 2.0.
+Copyright 2026 Google LLC
+
+This library is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
 
 =cut
